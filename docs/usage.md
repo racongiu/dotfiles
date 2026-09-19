@@ -46,6 +46,7 @@ machine qui n'a aucun des trois.
 | `gb` / `gbd` / `gbD` | `git branch` / `branch --delete` / `branch -D` | git |
 | `gpl` / `gp` | `git pull` / `git push` | git |
 | `gl` | `git log --graph --oneline` | git |
+| `gconf` | `git config --list --show-origin --show-scope` | git |
 | `ghc <repo>` | clone `github.com:$GITUSER/<repo>` dans `$GHREPOS`, puis cd | git |
 | `glc <repo>` | clone `gitlab.com:$GLUSER/<repo>` dans `$GLREPOS`, puis cd | git |
 
