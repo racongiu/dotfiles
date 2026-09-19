@@ -154,7 +154,7 @@ Six sources, et rien d'autre. Toute autre adresse est un défaut, pas une option
 | installeur officiel **claude code** | `packages` | le CLI |
 | **`mise install`** | `runtimes` | runtimes et linters de `config.toml` |
 | **`git clone`** de **TPM** | `plugins` | tpm, puis les plugins de `tmux.conf` |
-| **`git submodule`** | `submodules` | [Raf7c/nvim](https://github.com/Raf7c/nvim) |
+| **`git submodule`** | `submodules` | [racongiu/nvim](https://github.com/racongiu/nvim) |
 
 `update` ajoute l'`origin` de ce dépôt. `upgrade` fait parler les outils déjà
 posés : `brew update/upgrade`, `mise upgrade`, `claude update`,

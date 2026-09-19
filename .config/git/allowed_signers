@@ -6,5 +6,5 @@
 # both identities are mine, and it is the line that would carry a per-forge
 # signing key the day one exists. Same valid-after on both -- one key, created
 # once.
-122828688+Raf7c@users.noreply.github.com namespaces="git",valid-after="20260804" sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAICo0419w/lTUzCp8gdLbDMaVBsXhOqy2xHwTU9KO10PmAAAAC3NzaDpzaWduaW5n signing-yubikey
+122828688+racongiu@users.noreply.github.com namespaces="git",valid-after="20260804" sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAICo0419w/lTUzCp8gdLbDMaVBsXhOqy2xHwTU9KO10PmAAAAC3NzaDpzaWduaW5n signing-yubikey
 24894647-racongiu@users.noreply.gitlab.com namespaces="git",valid-after="20260804" sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAICo0419w/lTUzCp8gdLbDMaVBsXhOqy2xHwTU9KO10PmAAAAC3NzaDpzaWduaW5n signing-yubikey

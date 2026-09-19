@@ -5,8 +5,8 @@
 set -eu
 
 readonly CONF="${XDG_CONFIG_HOME:-$HOME/.config}/aiddconf"
-readonly AIDD_URL="git@github.com:Raf7c/aidd.git"
-readonly LIB_URL="git@github.com:Raf7c/aidd-library.git"
+readonly AIDD_URL="git@github.com:racongiu/aidd.git"
+readonly LIB_URL="git@github.com:racongiu/aidd-library.git"
 
 # --- Prerequisites: git installed + GitHub SSH access ---
 check_prereqs() {

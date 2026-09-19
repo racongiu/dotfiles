@@ -183,7 +183,7 @@ l'ouverture de session.
 ## Éditeurs
 
 nvim porte la vraie config, en submodule
-([.config/nvim](https://github.com/Raf7c/nvim)).
+([.config/nvim](https://github.com/racongiu/nvim)).
 
 `.vimrc` reçoit cinq lignes pour qu'un fichier édité sans nvim garde la même
 indentation : **tabulations, jamais d'espaces, quatre colonnes**.

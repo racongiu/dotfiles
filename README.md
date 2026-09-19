@@ -1,7 +1,7 @@
 ![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
 ![Shell](https://img.shields.io/badge/shell-zsh%20%C2%B7%20bash-1a1a1a?logo=gnubash&logoColor=white)
 ![Install](https://img.shields.io/badge/install-POSIX%20sh%20%C2%B7%20idempotent-2ea44f)
-[![CI](https://github.com/Raf7c/dotfiles/actions/workflows/ci.yml/badge.svg)](https://github.com/Raf7c/dotfiles/actions/workflows/ci.yml)
+[![CI](https://github.com/racongiu/dotfiles/actions/workflows/ci.yml/badge.svg)](https://github.com/racongiu/dotfiles/actions/workflows/ci.yml)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 Tout mon environnement de travail, versionné et reproductible : un seul
@@ -86,7 +86,7 @@ Détails, ordre de chargement et décisions de conception :
 ├── .config/             # tout ce qui est lié dans ~/.config
 │   ├── zsh/ tmux/ git/  #   les trois qui portent le plus de mécanique
 │   ├── ghostty/ kitty/  #   terminaux
-│   └── nvim/            #   submodule Raf7c/nvim
+│   └── nvim/            #   submodule racongiu/nvim
 ├── scripts/             # manuels, sur le PATH, jamais lancés par ./run
 ├── docs/                # architecture · installeur · sécurité
 │                        # usage · outils · maintenance
@@ -108,7 +108,7 @@ Dans `setup/` : [docs/installer.md](docs/installer.md).
 ## Démarrage rapide
 
 ```sh
-git clone --recurse-submodules git@github.com:Raf7c/dotfiles.git ~/.dotfiles
+git clone --recurse-submodules git@github.com:racongiu/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 ./run install
 exec zsh
