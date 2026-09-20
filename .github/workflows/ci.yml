@@ -203,5 +203,7 @@ jobs:
           .config/zsh/.zprofile .config/zsh/fzf.zsh .config/zsh/zinit.zsh
 
       # yamllint is a pinned authority tool: unused, the pin is a lie.
-      - name: yamllint (workflows, dependabot)
-        run: yamllint .github .yamllint.yml
+      # .config/lazygit is listed EXPLICITLY: yamllint walks directories but
+      # a config that nobody lints is a config that breaks on the next machine.
+      - name: yamllint (workflows, dependabot, lazygit)
+        run: yamllint .github .yamllint.yml .config/lazygit

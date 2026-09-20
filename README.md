@@ -88,6 +88,8 @@ Détails, ordre de chargement et décisions de conception :
 │   ├── ghostty/ kitty/  #   terminaux
 │   └── nvim/            #   submodule racongiu/nvim
 ├── scripts/             # manuels, sur le PATH, jamais lancés par ./run
+│   └── theme/            #   l'exception : appelés par git et tmux,
+│                        #   dans un sous-dossier donc hors du PATH
 ├── docs/                # architecture · installeur · sécurité
 │                        # usage · outils · maintenance
 ├── .github/             # workflow de CI + Dependabot

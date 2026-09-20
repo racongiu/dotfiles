@@ -71,8 +71,8 @@ ne se voient jamais.
 | [starship](https://starship.rs) | PS1 | une seule config de prompt pour zsh et bash |
 | [btop](https://github.com/aristocratos/btop) | top | vue lisible des ressources |
 | [yazi](https://yazi-rs.github.io) | `ls` et `cd` à la main | explorateur de fichiers en terminal ; thème auto clair/sombre, réglages d'origine pour le reste |
-| [lazygit](https://github.com/jesseduffield/lazygit) | rien | mettre des hunks en index bat `git add -p` |
-| [delta](https://github.com/dandavison/delta) | le pager de git | `git diff`, `git log`, `git show` en deux colonnes, avec numéros de ligne et coloration syntaxique ; suit le fond clair ou sombre du terminal |
+| [lazygit](https://github.com/jesseduffield/lazygit) | rien | mettre des hunks en index sans `git add -p` ; rend les diffs avec delta, et le numéro de ligne cliqué ouvre l'éditeur à cette ligne |
+| [delta](https://github.com/dandavison/delta) | le pager de git | `git diff`, `git log`, `git show` en deux colonnes, avec numéros de ligne et coloration syntaxique ; thème Catppuccin, clair ou sombre selon le bureau |
 | [jq](https://github.com/jqlang/jq) | rien | du JSON en ligne de commande |
 | [xh](https://github.com/ducaale/xh) | `curl`, à la main | requêtes HTTP écrites à la main : syntaxe lisible, JSON coloré. `curl` reste pour les scripts et les téléchargements |
 | [just](https://github.com/casey/just) | rien | lanceur de commandes nommées, **pas** un remplaçant de make |
@@ -80,9 +80,76 @@ ne se voient jamais.
 | [posting](https://posting.sh) | Postman, Insomnia | client HTTP en TUI, requêtes en YAML versionnables. Complète `xh` : l'un pour une ligne, l'autre pour une collection |
 
 `bat` : config `numbers,changes,header` ; l'aperçu fzf la remplace par
-`plain,numbers`. `just` contre `make` : make construit (C, cibles
+`plain,numbers`. Son thème suit le clair/sombre tout seul, sans script :
+`--theme-dark` et `--theme-light` nomment les deux saveurs Catppuccin, et
+`auto:system` décide — voir plus bas pourquoi `auto` tout court ne suffit pas. `just` contre `make` : make construit (C, cibles
 incrémentales), just lance les tâches d'un dépôt sans la cérémonie des
 `.PHONY`.
+
+## Le clair/sombre, un seul détecteur
+
+`scripts/theme/detect.sh` répond `light` ou `dark`, et c'est le seul à répondre.
+Il interroge le **bureau**, pas le terminal : ghostty est réglé sur
+`light:...,dark:...`, donc il suit la même apparence système et les deux
+réponses ne peuvent pas diverger.
+
+La préférence appartient au **bureau**, pas à la distribution : Fedora et Arch
+répondent l'un comme l'autre à travers le bureau qui y est installé. D'où
+l'ordre des sondes :
+
+| Ordre | Sonde | Ce qu'elle couvre | Déjà présente grâce à |
+|---|---|---|---|
+| 1 | `TERM_THEME=light\|dark` | la main, et ssh | — |
+| 2 | `defaults read -g AppleInterfaceStyle` | macOS | le système |
+| 3 | portail `org.freedesktop.appearance` | GNOME, KDE, Hyprland, tout ce qui l'implémente | `gdbus` (glib2) ou `busctl` (systemd) |
+| 4 | `gsettings` `org.gnome.desktop.interface` | GNOME sans portail | glib2 |
+| 5 | rien : `dark` | gestionnaire de fenêtres nu, tty, conteneur | — |
+
+Le portail renvoie 2 pour clair, 1 pour sombre et 0 pour « sans préférence » —
+ce dernier ne décide rien et laisse passer à la sonde suivante. Aucune de ces
+commandes n'est un paquet à installer sur Fedora ou Arch : glib2 et systemd
+sont déjà là, ce qui compte sur une machine où l'on n'est pas root.
+
+Le repli final est `dark` délibérément : une palette claire sur fond sombre est
+illisible, et c'est la sonde qui échoue, jamais l'affichage.
+
+| Qui consomme | Comment | Quand ça bascule |
+|---|---|---|
+| delta | `scripts/theme/delta.sh`, le pager de git | au `git diff` suivant |
+| lazygit, les diffs | le même script, via `diffRenderers` | au lancement suivant |
+| lazygit, l'interface | les couleurs ANSI du terminal | en direct |
+| bat | sa détection à lui, réglée sur `auto:system` | à l'appel suivant |
+| yazi, nvim | leur propre détection | en direct |
+| tmux | `scripts/theme/tmux.sh`, appelé par la barre de statut | au tick suivant, 3 s au pire |
+
+Pourquoi un script plutôt qu'une variable d'environnement : une variable est
+**figée à l'ouverture du shell**. Basculer le bureau en clair après coup, et
+tous les shells déjà ouverts continuent de servir la saveur sombre — mesuré.
+Le pager, lui, est relancé à chaque commande.
+
+tmux n'a ni minuterie ni événement « le bureau a changé » : le rafraîchissement
+de sa barre de statut est le seul rendez-vous périodique disponible, d'où le
+`#()` dans `status-right`. Il n'affiche rien ; il re-source un fichier de thème
+**uniquement quand la réponse a changé**, la dernière étant retenue dans
+l'option `@theme` — qui vit dans le serveur tmux et meurt avec lui.
+
+Le pager coûte un fork et une lecture de préférence par commande git **qui
+pagine** ; git n'en lance un que si sa sortie est un terminal, donc les scripts
+et la CI ne paient rien. Côté bat, les deux thèmes Catppuccin sont embarqués
+depuis la version 0.26.0 ; en dessous, il faut les installer à la main.
+
+Ce qui est **déjà affiché** ne se repeint pas, et c'est la ligne de partage
+entre tes outils. `bat` et `delta` dessinent une page puis rendent la main :
+basculer le bureau pendant qu'on les lit demande de quitter et de relancer la
+commande. tmux, yazi, nvim et lazygit redessinent d'eux-mêmes, donc ils suivent
+en direct — lazygit parce qu'il relance son rendu à chaque fichier
+sélectionné. Ce n'est pas une limite de ce montage : un `cat` et un pager
+choisissent leur thème au moment où ils écrivent, un point c'est tout.
+
+delta sait détecter seul, mais **uniquement quand sa sortie n'est pas
+redirigée** : dans lazygit il écrit dans un tuyau et n'interroge jamais rien.
+Et une saveur Catppuccin pose `dark` ou `light`, ce qui coupe de toute façon
+sa détection. Le choix de la saveur doit donc venir de l'extérieur.
 
 ## Quatre clients HTTP, quatre usages
 
@@ -141,7 +208,7 @@ par superstition.
 | Outil | Épinglage |
 |---|---|
 | neovim | `0.12` |
-| node | `24` |
+| node | `lts` |
 | python | `3.14` |
 | rust | `1` |
 | shellcheck | `0.11` |
@@ -155,8 +222,9 @@ par superstition.
 `latest` installe ce qui existe le jour même. Deux installations montées à un
 mois d'écart divergeraient, et « reproductible » cesserait d'être vrai.
 
-Les mises à jour mineures et correctives passent par `./run upgrade`. Les
-majeures se montent dans le fichier, délibérément.
+Les mises à jour mineures et correctives passent par `./run upgrade`, qui
+reste dans l'épingle. Les majeures se montent dans le fichier, délibérément :
+`mise upgrade --bump` le fait et réécrit la ligne, à relire avant de committer.
 
 `latest` est réservé à la plomberie sans enjeu, les trois entrées dont rien ne
 dépend au niveau version : pipx, tree-sitter et usage.
