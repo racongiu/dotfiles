@@ -8,15 +8,25 @@ Préfixe : **`Ctrl-Space`** (`C-b` délié). Touches vi partout.
 
 ### Sessions, fenêtres, panneaux
 
+**`prefix ?`** liste tout, y compris les touches ci-dessous : chaque `bind` du
+fichier porte une note `-N`, et `prefix ?` n'affiche que les bindings qui en
+ont une. Ce tableau est donc un doublon assumé, pour lire depuis GitHub.
+
 | Touche | Action |
 |---|---|
 | `prefix r` | recharge tmux.conf |
-| `prefix b` | découpe horizontale, même répertoire |
-| `prefix v` | découpe verticale, même répertoire |
+| `prefix b` | découpe côte à côte, même répertoire |
+| `prefix v` | découpe haut/bas, même répertoire |
 | `prefix c` | nouvelle fenêtre, même répertoire |
 | `Ctrl-h/j/k/l` | navigue entre les panneaux **et** les splits nvim |
 | `prefix h/j/k/l` | redimensionne le panneau de 5 (répétable) |
-| `prefix m` | zoom du panneau (bascule) |
+| `prefix z` | zoom du panneau (bascule, défaut tmux) |
+| `prefix m` | marque le panneau, pour `join-pane` et `swap-pane` |
+| `prefix Tab` | revient à la fenêtre précédente |
+| `prefix ;` | revient au panneau précédent (défaut tmux) |
+| `prefix n` / `p` | fenêtre suivante / précédente (répétable) |
+| `prefix !` | sort le panneau dans sa propre fenêtre (défaut tmux) |
+| `prefix @` | ramène une fenêtre comme panneau |
 | `prefix Shift-←/→` | déplace la fenêtre à gauche / à droite (répétable) |
 
 ### Mode copie (touches vi)
