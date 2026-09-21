@@ -8,15 +8,25 @@ Préfixe : **`Ctrl-Space`** (`C-b` délié). Touches vi partout.
 
 ### Sessions, fenêtres, panneaux
 
+**`prefix ?`** liste tout, y compris les touches ci-dessous : chaque `bind` du
+fichier porte une note `-N`, et `prefix ?` n'affiche que les bindings qui en
+ont une. Ce tableau est donc un doublon assumé, pour lire depuis GitHub.
+
 | Touche | Action |
 |---|---|
 | `prefix r` | recharge tmux.conf |
-| `prefix b` | découpe horizontale, même répertoire |
-| `prefix v` | découpe verticale, même répertoire |
+| `prefix b` | découpe côte à côte, même répertoire |
+| `prefix v` | découpe haut/bas, même répertoire |
 | `prefix c` | nouvelle fenêtre, même répertoire |
 | `Ctrl-h/j/k/l` | navigue entre les panneaux **et** les splits nvim |
 | `prefix h/j/k/l` | redimensionne le panneau de 5 (répétable) |
-| `prefix m` | zoom du panneau (bascule) |
+| `prefix z` | zoom du panneau (bascule, défaut tmux) |
+| `prefix m` | marque le panneau, pour `join-pane` et `swap-pane` |
+| `prefix Tab` | revient à la fenêtre précédente |
+| `prefix ;` | revient au panneau précédent (défaut tmux) |
+| `prefix n` / `p` | fenêtre suivante / précédente (répétable) |
+| `prefix !` | sort le panneau dans sa propre fenêtre (défaut tmux) |
+| `prefix @` | ramène une fenêtre comme panneau |
 | `prefix Shift-←/→` | déplace la fenêtre à gauche / à droite (répétable) |
 
 ### Mode copie (touches vi)
@@ -50,19 +60,23 @@ Barre de statut écrite à la main sur la palette
 [Catppuccin](https://github.com/catppuccin/catppuccin), pas le plugin officiel.
 Deux fichiers dans `themes/`, zéro dépendance.
 
-Le choix se fait **au démarrage du serveur**, d'après l'apparence de l'OS.
-`TMUX_THEME=light|dark` le force. Après une bascule clair/sombre de l'OS,
-`prefix r` réapplique.
+Le choix **suit l'apparence de l'OS en continu**.
+`scripts/theme/tmux.sh` est appelé par la barre de statut, donc toutes les
+`status-interval` secondes, et ne re-source un fichier de thème que si la
+réponse a changé. `TERM_THEME=light|dark` la force.
 
 <details>
-<summary>Le fallback, et pourquoi le choix n'est pas continu</summary>
+<summary>Où est le crochet, et le fallback</summary>
 
-L'apparence vient de `defaults` (macOS) ou `gsettings` (GNOME). Quand c'est
-indétectable — ssh, serveur sans écran — le fallback est **mocha** : une barre
-pâle serait illisible, alors que l'inverse se lit encore.
+tmux n'a ni minuterie ni événement « l'apparence a changé » : le
+rafraîchissement de la barre est le seul rendez-vous périodique disponible,
+d'où le `#()` dans `status-right` — qui n'imprime rien. Il vit là et non dans
+un fichier de thème, sinon il serait effacé à chaque re-source. La dernière
+réponse est retenue dans l'option `@theme`, qui meurt avec le serveur tmux.
 
-Aucune réévaluation continue. C'est manuel à dessein : un hook par OS coûterait
-plus qu'il ne rapporte.
+La sonde et son ordre : [outils.md](../../docs/outils.md). Quand tout se tait
+— ssh, tty, machine sans bureau — le fallback est **mocha** : une barre pâle
+serait illisible, alors que l'inverse se lit encore.
 
 </details>
 

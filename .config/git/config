@@ -3,13 +3,22 @@
     email = 122828688+racongiu@users.noreply.github.com
 
 [core]
-    pager = delta
+    # A wrapper, not `delta`: it picks the flavour at each call. git hands a
+    # pager containing `~` to the shell, so it expands -- measured.
+    pager = ~/.config/scripts/theme/delta.sh
+
+[include]
+    path = catppuccin.gitconfig
 
 [delta]
+    # Fallback only: the pager passes --features, which replaces this line.
+    features = catppuccin-mocha
     side-by-side = true
     line-numbers = true
     # `n` and `N` jump from file to file inside the pager.
     navigate = true
+    # The only one of the five file-header labels delta leaves empty.
+    file-modified-label = modified:
 
 [column]
     ui = auto

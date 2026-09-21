@@ -12,15 +12,30 @@ La mécanique des fichiers, la signature, les alias, et les valeurs par défaut.
 | Où est la clé ? | `config.local`, généré par machine, gitignoré |
 | Les alias git ? | aucun : ce sont des alias de shell |
 
-## Les cinq fichiers
+## Les six fichiers
 
 | Fichier | Rôle |
 |---|---|
 | `config` | la config versionnée, portable. Identité par défaut (GitHub) + les deux conditions qui la basculent |
 | `config.gitlab` | l'identité GitLab, versionnée, tirée par ces conditions |
 | `config.local` | la part **machine** : `allowedSignersFile`, et la clé quand elle existe. Généré par `./run install gitsign`, gitignoré |
+| `catppuccin.gitconfig` | les couleurs de delta, latte et mocha. Recopié de l'amont, **à ne pas réécrire à la main** |
 | `allowed_signers` | les signataires acceptés. **Maintenu par `gitsign`**, en ajout seul |
 | `ignore` | exclusions globales : déchets d'OS et d'éditeur, rien d'autre |
+
+### delta
+
+`config` pose ce qui ne dépend pas du thème (deux colonnes, numéros de ligne,
+`navigate`) et `catppuccin.gitconfig` pose les couleurs. La saveur, elle, est
+choisie **à chaque appel** par `scripts/theme/delta.sh`, qui est le pager — la
+ligne `features` de `config` n'est plus qu'un repli pour un `delta` lancé à la
+main. Voir [outils.md](../../docs/outils.md).
+
+Trois pièges vérifiés : une variable d'environnement ne convient pas ici, elle
+est figée à l'ouverture du shell ; `DELTA_FEATURES=+catppuccin-latte` (avec le
+`+`, qui **ajoute**) applique les deux saveurs à la fois et delta refuse de
+démarrer ; et `side-by-side` est un drapeau sans négation en ligne de commande,
+donc lazygit hérite des deux colonnes sans pouvoir les refuser.
 
 <details>
 <summary>Pourquoi cette séparation</summary>

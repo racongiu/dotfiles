@@ -43,20 +43,6 @@ zle -N _fzf_file_no_hidden
 # Declared next to the widget it uses, so it can never outlive it.
 bindkey '^F' _fzf_file_no_hidden
 
-# --- fzf-git.sh: plain-command aliases ---
-# The plugin binds CTRL-G CTRL-{F,B,T,R,H,S,L,W,E}; these call the same
-# functions as commands. The binding INSERTS the selection on the command line,
-# the alias PRINTS it, so `git switch $(gbb)` works.
-# A DOUBLED letter for the three used daily, the gf* prefix for the rest. The
-# first three leave that prefix, so they are the ones to check against
-# shell/aliases.sh before adding a git alias in gb*, gf* or gh*.
-alias gff='_fzf_git_files'
-alias gbb='_fzf_git_branches'
-alias ghh='_fzf_git_hashes'
-alias gft='_fzf_git_tags'
-alias gfr='_fzf_git_remotes'
-alias gfs='_fzf_git_stashes'
-alias gfl='_fzf_git_lreflogs'
-alias gfw='_fzf_git_worktrees'
-alias gfe='_fzf_git_each_ref'
-alias gfk='_fzf_git_list_bindings'
+# The fzf-git.sh commands are NOT declared here: they live in
+# shell/aliases.sh, as functions that fall back to plain git. Sharing them
+# with bash is the point, and one namespace beats two.

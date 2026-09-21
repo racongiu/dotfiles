@@ -10,6 +10,7 @@ dotfiles_links() {
 .config/zsh            .config/zsh
 .config/tmux           .config/tmux
 .config/git            .config/git
+.config/lazygit        .config/lazygit
 .config/ghostty        .config/ghostty
 .config/kitty          .config/kitty
 .config/bat            .config/bat

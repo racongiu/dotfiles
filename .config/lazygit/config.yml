@@ -1,0 +1,25 @@
+---
+# lazygit: only what differs from the defaults.
+#
+# On macOS lazygit reads ~/Library/Application Support/lazygit/config.yml
+# UNLESS XDG_CONFIG_HOME is set; env.sh sets it, hence this path.
+#
+# NO theme block, on purpose: lazygit's defaults are ANSI colour NAMES, which
+# the terminal resolves -- already catppuccin, and already following the
+# light/dark switch. Pinning one flavour's hex values would lose that.
+#
+# lazygit REWRITES this file in place when an upstream key is renamed; through
+# the symlink, that means the versioned file. Read that diff, do not revert it
+# blindly.
+git:
+  # lazygit does NOT use core.pager: it sets GIT_PAGER to this command. Same
+  # wrapper as git's pager, so the two cannot drift apart. `type` and
+  # `colorArg` are the defaults, left unwritten. The hyperlinks are
+  # lazygit-specific: a clicked line number opens the editor there.
+  diffRenderers:
+    - command: >-
+        ~/.config/scripts/theme/delta.sh --paging=never --hyperlinks
+        --hyperlinks-file-link-format=lazygit-edit://{path}:{line}
+
+gui:
+  nerdFontsVersion: "3"

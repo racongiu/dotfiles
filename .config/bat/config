@@ -1,2 +1,6 @@
 --style="numbers,changes,header"
 --paging="auto"
+
+--theme="auto:system"
+--theme-dark="Catppuccin Mocha"
+--theme-light="Catppuccin Latte"
