@@ -1,8 +1,8 @@
 # Usage
 
 Tout ce qu'on tape : les raccourcis que cette configuration ajoute ou change,
-et les alias qu'elle définit. Les valeurs par défaut d'origine ne sont pas
-listées.
+et les alias et fonctions qu'elle définit. Les valeurs par défaut d'origine
+ne sont pas listées.
 
 ## zsh : édition de ligne (mode vi)
 
@@ -29,22 +29,24 @@ machine qui n'a aucun des trois.
 
 ## Alias et fonctions de shell
 
-| Alias | Devient | A besoin de |
+| Alias ou fonction | Devient | A besoin de |
 |---|---|---|
 | `ll` / `la` | `eza -lh` / `eza -lah`, icônes et statut git | eza (fallback : `ls -lh` / `ls -lah`) |
-| `lt` | `eza --tree --icons=auto` | eza (fallback : `tree`) |
+| `lt` | `eza --tree --level=2 --long --icons --git` | eza (fallback : `tree -L 2`) |
 | `ls` | `eza --icons=auto` | eza seulement : sans lui, `ls` reste le `ls` du système |
 | `cat` | `bat` | bat |
 | `diff` | `diff --color=auto` | GNU diff (sondé) |
 | `df` | `df -h` | rien |
 | `v` | `nvim` | rien |
+| `c` | `clear` | rien |
 | `path` | `$PATH`, un répertoire par ligne | rien |
-| `g` | `git` | git |
-| `ga` / `ga.` / `gaa` | `git add` / `add .` / `add --all` | git |
-| `gs` / `gd` / `gds` | `git status` / `diff` / `diff --staged` | git |
-| `gc` / `gck` | `git commit` / `checkout` | git |
-| `gb` / `gbd` / `gbD` | `git branch` / `branch --delete` / `branch -D` | git |
-| `gpl` / `gp` | `git pull` / `git push` | git |
+| `gad` / `gad.` | `git add` / `add .` | git |
+| `gst` | `git status` | git |
+| `gd` / `gds` | `git diff` / `diff --staged` | git |
+| `gc` / `gca` | `git commit -m` / `commit -am` | git |
+| `gck` | `git checkout` | git |
+| `gbd` / `gbD` | `git branch --delete` / `branch -D` | git |
+| `gpu` / `gp` | `git pull origin` / `git push` | git |
 | `gl` | `git log --graph --oneline` | git |
 | `gconf` | `git config --list --show-origin --show-scope` | git |
 | `ghc <repo>` | clone `github.com:$GITUSER/<repo>` dans `$GHREPOS`, puis cd | git |
@@ -62,7 +64,7 @@ exigerait** : l'identité qu'un dépôt utilise est décidée par l'URL de son
 remote, donc un simple `git clone` dans n'importe quel répertoire choisit la
 bonne tout seul.
 
-Ce sont des alias de **shell**, pas des alias git : `gs`, pas `git st`.
+Ce sont des alias de **shell**, pas des alias git : `gst`, pas `git st`.
 Hors d'un shell interactif, git ne répond qu'à git tel quel — le coût est écrit
 là où ils vivent, dans `shell/aliases.sh`. La config git elle-même :
 [.config/git/README.md](../.config/git/README.md).
@@ -71,35 +73,41 @@ là où ils vivent, dans `shell/aliases.sh`. La config git elle-même :
 
 [fzf-git.sh](https://github.com/junegunn/fzf-git.sh), chargé par zinit quand
 fzf est présent. Chaque raccourci commence par `Ctrl-G` ; les mêmes fonctions
-sont aussi joignables comme de simples commandes. Une **lettre doublée** pour
-les trois du quotidien, le préfixe `gf*` pour le reste.
+sont aussi joignables comme de simples commandes.
 
 Chaque raccourci est lié **deux fois** : `Ctrl-G Ctrl-B` et `Ctrl-G b` appellent
 le même widget. La seconde forme évite de garder `Ctrl` enfoncé, la table
 ci-dessous ne cite que la première.
 
-| Raccourci | Alias | Objet |
-|---|---|---|
-| `Ctrl-G Ctrl-F` | `gff` | fichiers (suivis + non suivis, avec le statut) |
-| `Ctrl-G Ctrl-B` | `gbb` | branches |
-| `Ctrl-G Ctrl-T` | `gft` | tags |
-| `Ctrl-G Ctrl-R` | `gfr` | remotes |
-| `Ctrl-G Ctrl-H` | `ghh` | hachages de commits |
-| `Ctrl-G Ctrl-S` | `gfs` | stashes |
-| `Ctrl-G Ctrl-L` | `gfl` | reflogs |
-| `Ctrl-G Ctrl-W` | `gfw` | worktrees |
-| `Ctrl-G Ctrl-E` | `gfe` | chaque ref (`git for-each-ref`) |
-| `Ctrl-G ?` | `gfk` | la liste de ces raccourcis |
+| Raccourci | Commande | Objet | Repli sans fzf-git |
+|---|---|---|---|
+| `Ctrl-G Ctrl-B` | `gb` | branches | `git branch` |
+| `Ctrl-G Ctrl-T` | `gt` | tags | `git tag` |
+| `Ctrl-G Ctrl-R` | `gr` | remotes | `git remote -v` |
+| `Ctrl-G Ctrl-H` | `gh` | hachages de commits | `git log --oneline` |
+| `Ctrl-G Ctrl-W` | `gw` | worktrees | `git worktree list` |
+| `Ctrl-G Ctrl-E` | `ger` | chaque ref | `git for-each-ref` |
+| `Ctrl-G ?` | `gfk` | la liste de ces raccourcis | aucun |
 
-Le raccourci **insère** la sélection dans la ligne de commande ; l'alias
-l'**affiche**, d'où `git switch $(gbb)`. Dans le sélecteur : `Ctrl-O` ouvre
+`Ctrl-G Ctrl-F` (fichiers), `Ctrl-G Ctrl-S` (stashes) et `Ctrl-G Ctrl-L`
+(reflogs) gardent leur raccourci clavier, sans forme en ligne de commande.
+
+Les commandes sont des **fonctions** de `shell/aliases.sh`, pas des alias de
+`zsh/fzf.zsh` : elles choisissent au moment où on les tape. Deux raisons. zinit
+charge fzf-git.sh en différé, après l'apparition du prompt, donc un test écrit
+au démarrage le trouverait toujours absent. Et bash n'a jamais fzf-git.sh,
+zinit étant un gestionnaire de greffons zsh : sans repli, `gb` y répondrait
+`command not found`.
+
+Le raccourci **insère** la sélection dans la ligne de commande ; la commande
+l'**affiche**, d'où `git switch $(gb)`. Dans le sélecteur : `Ctrl-O` ouvre
 dans le navigateur, `Alt-E` dans `$EDITOR`, `Ctrl-/` fait défiler l'aperçu.
 
 `gfk` fait exception, et c'est la seule ligne de la table où les deux colonnes
 ne sont pas équivalentes : le raccourci affiche la liste **sous** le prompt, en
-message transitoire, effacé à la frappe suivante ; l'alias l'écrit dans le
-défilement, où elle reste lisible pendant qu'on tape. C'est aussi le seul des
-dix qui n'exige pas d'être dans un dépôt git.
+message transitoire, effacé à la frappe suivante ; la commande l'écrit dans le
+défilement, où elle reste lisible pendant qu'on tape. C'est aussi le seul qui
+n'exige pas d'être dans un dépôt git.
 
 ## Terminaux
 

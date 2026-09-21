@@ -10,14 +10,17 @@ if command -v eza >/dev/null 2>&1; then
   alias ls='eza --icons=auto'
   alias ll='eza -lh --icons=auto --git'
   alias la='eza -lah --icons=auto --git'
-  alias lt='eza --tree --icons=auto'
+  # A bare `--icons` is safe HERE: `--git` follows it, so no argument can be
+  # swallowed. `--level=2` keeps the tree readable inside a deep repo.
+  alias lt='eza --tree --level=2 --long --icons --git'
 else
   alias ll='ls -lh'
   alias la='ls -lah'
   # `ls` gets no alias here on purpose: without eza it IS the system ls, and
   # adding flags would mean picking between the BSD and GNU spellings.
   if command -v tree >/dev/null 2>&1; then
-    alias lt='tree'
+    # -L 2: the same depth as the eza form above.
+    alias lt='tree -L 2'
   fi
 fi
 
@@ -33,6 +36,7 @@ alias df='df -h'
 alias path='printf "%s\n" "$PATH" | tr ":" "\n"'
 
 alias v='nvim'
+alias c='clear'
 
 # The formula ships `gcc-16` and never a plain `gcc`: Homebrew will not shadow
 # Apple's. PERISHABLE: bump the number when brew moves to gcc-17. A keyboard
@@ -41,26 +45,46 @@ command -v gcc-16 >/dev/null 2>&1 && alias gcc='gcc-16'
 
 # Shell aliases, NOT git aliases: `gs` beats `git st`. The trade-off is that
 # they live only in interactive shells; a script or an IDE sees plain git.
-# `gb*` and `gh*` are shared with zsh/fzf.zsh: check there before adding one.
 if command -v git >/dev/null 2>&1; then
-  alias g='git'
-  alias ga='git add'
-  alias ga.='git add .'
-  alias gaa='git add --all'
-  alias gs='git status'
+  alias gad='git add'
+  alias gad.='git add .'
+  alias gst='git status'
+  alias gc='git commit -m'
+  alias gca='git commit -am'
+  alias gpu='git pull origin'
+  alias gp='git push'
+
   alias gd='git diff'
   alias gds='git diff --staged'
-  alias gc='git commit'
+
   alias gck='git checkout'
-  alias gb='git branch'
   alias gbd='git branch --delete'
   alias gbD='git branch -D'
-  alias gpl='git pull'
-  alias gp='git push'
+
   # `--oneline` IS `--pretty=oneline --abbrev-commit`, and `--decorate` is the
   # default on a terminal: both measured, both dropped.
   alias gl='git log --graph --oneline'
   alias gconf='git config --list --show-origin --show-scope'
+
+  # --- fzf-git.sh, with a fallback ---
+  # Functions, not aliases: the test runs when the command is TYPED, because
+  # fzf-git.sh loads late or never (docs/usage.md). `command -v` finds a shell
+  # FUNCTION, in dash as in bash and zsh -- measured.
+  gb() { if command -v _fzf_git_branches >/dev/null 2>&1; then _fzf_git_branches "$@"; else git branch "$@"; fi; }
+  gt() { if command -v _fzf_git_tags >/dev/null 2>&1; then _fzf_git_tags "$@"; else git tag "$@"; fi; }
+  gr() { if command -v _fzf_git_remotes >/dev/null 2>&1; then _fzf_git_remotes "$@"; else git remote -v "$@"; fi; }
+  gw() { if command -v _fzf_git_worktrees >/dev/null 2>&1; then _fzf_git_worktrees "$@"; else git worktree list "$@"; fi; }
+  gh() { if command -v _fzf_git_hashes >/dev/null 2>&1; then _fzf_git_hashes "$@"; else git log --oneline "$@"; fi; }
+  ger() { if command -v _fzf_git_each_ref >/dev/null 2>&1; then _fzf_git_each_ref "$@"; else git for-each-ref --format='%(refname:short)' "$@"; fi; }
+  # No fallback: it prints the CTRL-G cheat sheet, which has no plain-git twin.
+  gfk() {
+    if command -v _fzf_git_list_bindings >/dev/null 2>&1; then
+      _fzf_git_list_bindings "$@"
+    else
+      printf 'fzf-git.sh is not loaded (zsh only, through zinit).\n' >&2
+      return 1
+    fi
+  }
 fi
 
 # ghc / glc <repo>: clone into $GHREPOS / $GLREPOS, then cd. TIDINESS only --
