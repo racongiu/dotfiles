@@ -50,6 +50,20 @@ ${REPOS}/gitlab
 EOF
 }
 
+# Files the .zshenv link makes DEAD: it sets ZDOTDIR, and zsh then opens none
+# of these in $HOME -- measured with `zsh -o sourcetrace`. The symlinks step
+# MOVES them to the backup directory, never deletes them. One absolute path per
+# line; a glob is allowed, the completion cache comes with variants.
+dotfiles_superseded() {
+  cat <<EOF
+$HOME/.zshrc
+$HOME/.zprofile
+$HOME/.zlogin
+$HOME/.zlogout
+$HOME/.zcompdump*
+EOF
+}
+
 # History migrations: "<old absolute path>  <new absolute location>".
 # UNQUOTED heredoc: $HOME and ${XDG_*:-default} are expanded here.
 dotfiles_history_migrations() {
