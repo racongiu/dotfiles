@@ -54,7 +54,7 @@ lien échoue après le backup, l'original est restauré.
 | 2 | `submodules` | init/sync des submodules, rattache chacun à sa branche | non | oui |
 | 3 | `directories` | crée les répertoires XDG | non | non |
 | 4 | `migrate` | déplace les anciens historiques vers XDG | non | non |
-| 5 | `symlinks` | applique `manifest.sh`, avec backup | non | non |
+| 5 | `symlinks` | applique `manifest.sh`, avec backup ; range les fichiers zsh devenus morts | non | non |
 | 6 | `packages` | `brew bundle`, puis claude code | non | oui |
 | 7 | `gitsign` | génère `config.local`, complète `allowed_signers` | non | non |
 | 8 | `runtimes` | ce que `mise` déclare | non | oui |
@@ -79,10 +79,18 @@ rien de plus.
 | `plugins` | `prereqs` pour git, `symlinks` pour `~/.config/tmux` |
 | `shell` | `packages` : `chsh` a besoin que zsh soit installé |
 
-Trois méritent une note :
+Quatre méritent une note :
 
 - **migrate** est rejoué à chaque `install` mais ne fait rien la deuxième fois.
   `update` ne le rejoue pas du tout.
+- **symlinks** range aussi ce que le lien `.zshenv` rend mort. Il pose
+  `ZDOTDIR`, et zsh n'ouvre plus alors `~/.zshrc`, `~/.zprofile`, `~/.zlogin`
+  ni `~/.zlogout` — mesuré avec `zsh -o sourcetrace`. Ni le vieux cache de
+  complétion `~/.zcompdump*`, qui s'écrit désormais dans `~/.cache/zsh/`.
+  Ils partent dans le backup du run, **jamais supprimés**, et seulement une
+  fois `.zshenv` réellement lié : les déplacer avant retirerait un
+  `~/.zshrc` encore en service. La liste : `dotfiles_superseded` dans
+  `manifest.sh`.
 - **gitsign** n'écrase jamais un `config.local` écrit à la main.
 - **prereqs** et **shell** sont les deux seules à demander sudo. La première
   parce que l'installeur Homebrew appelle `have_sudo_access` et abandonne sans
